@@ -71,6 +71,9 @@ class OfflineImageStore {
       // Assign uris to entry list cache(`this.entries`)
       Object.assign(this.entries, JSON.parse(uris));
 
+      // Add offline config, do not delete expired images in offline mode
+      if (config.isOffline) return onRestoreCompletion();
+
       // Remove Expired images from offline store and then call user given callback completion method !
       this._removeExpiredImages(onRestoreCompletion);
     });
