@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ImageBackground, Platform } from 'react-native';
+import { ImageBackground, Platform, Image } from 'react-native';
 
 import offlineImageStore from './OfflineImageStore';
 
@@ -43,11 +43,16 @@ class OfflineImage extends React.Component {
   componentWillReceiveProps(nextProps) {
     const nextSource = nextProps.source;
     const reloadImage = nextProps.reloadImage;
-
+    const { getImageSize = () => {} } = this.props
     const source = this.props.source;
     if (nextSource.uri !== source.uri){
       const offlinePath = offlineImageStore.getImageOfflinePath(nextSource.uri);
       this.setState({ path: offlinePath });
+      if (offlinePath) {
+        Image.getSize(offlinePath, (width, height) => {
+          getImageSize({ width, height })
+        });
+      }
       offlineImageStore.subscribe(nextSource, this.handler, reloadImage);
     }
   }
@@ -67,7 +72,7 @@ class OfflineImage extends React.Component {
      * Case 2: Show Fallback image if given until image gets downloaded
      * Case 3: Never cache image if property 'reloadImage' === never
      */
-    const { source, reloadImage } = this.props;
+    const { source, reloadImage, getImageSize = () => {} } = this.props;
 
     // TODO: check source type as 'ImageURISource'
     // Download only if property 'uri' exists
@@ -75,7 +80,11 @@ class OfflineImage extends React.Component {
       // Get image offline path if already exist else it returns undefined
       const offlinePath = offlineImageStore.getImageOfflinePath(source.uri);
       this.setState({ path: offlinePath });
-
+      if (offlinePath) {
+        Image.getSize(offlinePath, (width, height) => {
+          getImageSize({ width, height })
+        });
+      }
       // Subscribe so that we can re-render once image downloaded!
       offlineImageStore.subscribe(source, this.handler, reloadImage);
     }
@@ -83,7 +92,7 @@ class OfflineImage extends React.Component {
 
   // this.props.fallBackSource // Show default image as fallbackImage(If exist) until actual image has been loaded.
   render() {
-    const { fallbackSource, source, component } = this.props;
+    const { fallbackSource, source, component, onLayoutInner = () => {} } = this.props;
     let sourceImage = source;
 
     // Replace source.uri with offline image path instead waiting for image to download from server
