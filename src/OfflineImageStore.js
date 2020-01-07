@@ -309,11 +309,17 @@ class OfflineImageStore {
         path: this.getBaseDir() + '/' + imageFilePath
       })
       .fetch(method, source.uri, source.headers)
-      .then(() => {
-        // Add entry to entry list!!
-        this._addEntry(source.uri, imageFilePath);
-        // Notify subscribed handler AND Persist entries to AsyncStorage for offline
-        this._updateOfflineStore(source.uri).done();
+      .then((res) => {
+        if (res.respInfo.status === 200) {
+          // Add entry to entry list!!
+          this._addEntry(source.uri, imageFilePath);
+          // Notify subscribed handler AND Persist entries to AsyncStorage for offline
+          this._updateOfflineStore(source.uri).done();
+          return
+        }
+        if (this.store.debugMode) {
+          console.log('donwload image error', res)
+        }
         return null;
       }).catch(() => {
       if (this.store.debugMode) {
