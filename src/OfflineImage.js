@@ -112,7 +112,7 @@ class OfflineImage extends React.Component {
 
 OfflineImage.propTypes = {
   //fallbackSource: PropTypes.int,
-  component: PropTypes.func,
+  component: PropTypes.any,
   reloadImage: PropTypes.bool,
   onLoadEnd: PropTypes.func,
 };
