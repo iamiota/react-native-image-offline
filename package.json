@@ -2,7 +2,7 @@
   "name": "react-native-image-offline",
   "version": "0.1.11",
   "main": "src/index.js",
-  "repository": "https://github.com/code-and-co/react-native-image-offline.git",
+  "repository": "https://github.com/halfsoft/react-native-image-offline.git",
   "author": "code&co.",
   "license": "MIT",
   "keywords": [
