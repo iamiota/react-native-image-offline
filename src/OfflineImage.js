@@ -34,45 +34,32 @@ class OfflineImage extends React.Component {
     }
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return true
-    // if (!nextState.path) return true
-    // return this.state.path !== nextState.path || this.props.opacity !== nextProps.opacity;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const nextSource = nextProps.source;
-    const reloadImage = nextProps.reloadImage;
-    const { getImageSize = () => {} } = this.props
-    const source = this.props.source;
-    if (nextSource.uri !== source.uri){
+  componentDidUpdate(prevProps) {
+    const nextSource = this.props.source;
+    const reloadImage = this.props.reloadImage;
+    const source = prevProps.source;
+    if (nextSource.uri !== source.uri) {
       const offlinePath = offlineImageStore.getImageOfflinePath(nextSource.uri);
       this.setState({ path: offlinePath });
-      if (offlinePath) {
-        Image.getSize(offlinePath, (width, height) => {
-          getImageSize({ width, height })
-        });
-      }
       offlineImageStore.subscribe(nextSource, this.handler, reloadImage);
     }
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     const { source } = this.props;
     if (source.uri) {
-      // Subscribe so that we can re-render once image downloaded!
       offlineImageStore.unsubscribe(source, this.handler);
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     /**
      * Always download and update image in offline store if 'reloadImage' === 'always', however
      * Case 1: Show offline image if already exist
      * Case 2: Show Fallback image if given until image gets downloaded
      * Case 3: Never cache image if property 'reloadImage' === never
      */
-    const { source, reloadImage, getImageSize = () => {} } = this.props;
+    const { source, reloadImage } = this.props;
 
     // TODO: check source type as 'ImageURISource'
     // Download only if property 'uri' exists
@@ -80,11 +67,6 @@ class OfflineImage extends React.Component {
       // Get image offline path if already exist else it returns undefined
       const offlinePath = offlineImageStore.getImageOfflinePath(source.uri);
       this.setState({ path: offlinePath });
-      if (offlinePath) {
-        Image.getSize(offlinePath, (width, height) => {
-          getImageSize({ width, height })
-        });
-      }
       // Subscribe so that we can re-render once image downloaded!
       offlineImageStore.subscribe(source, this.handler, reloadImage);
     }
@@ -92,7 +74,7 @@ class OfflineImage extends React.Component {
 
   // this.props.fallBackSource // Show default image as fallbackImage(If exist) until actual image has been loaded.
   render() {
-    const { fallbackSource, source, component, onLayoutInner = () => {} } = this.props;
+    const { fallbackSource, source, component, onLayoutInner = () => { } } = this.props;
     let sourceImage = source;
 
     // Replace source.uri with offline image path instead waiting for image to download from server
@@ -116,13 +98,13 @@ class OfflineImage extends React.Component {
     if (component) {
       const Component = component;
       return (
-        <Component { ...componentProps }>{ this.props.children }</Component>
+        <Component {...componentProps}>{this.props.children}</Component>
       );
     }
 
     // Default component would be 'ImageBackground' to render
     return (
-      <ImageBackground { ...componentProps }>{ this.props.children }</ImageBackground>
+      <ImageBackground {...componentProps}>{this.props.children}</ImageBackground>
     );
   }
 
