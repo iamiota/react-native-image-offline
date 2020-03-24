@@ -38,15 +38,8 @@ class OfflineImage extends React.Component {
     const nextSource = this.props.source;
     const reloadImage = this.props.reloadImage;
     const source = prevProps.source;
-    const getImageSize = this.props.getImageSize;
     if (nextSource.uri !== source.uri) {
       const offlinePath = offlineImageStore.getImageOfflinePath(nextSource.uri);
-      if (offlinePath && getImageSize) {
-        (async () => {
-          const { width, height } = Image.resolveAssetSource(offlinePath);
-          getImageSize({ width, height });
-        })();
-      }
       this.setState({ path: offlinePath });
       offlineImageStore.subscribe(nextSource, this.handler, reloadImage);
     }
@@ -66,19 +59,13 @@ class OfflineImage extends React.Component {
      * Case 2: Show Fallback image if given until image gets downloaded
      * Case 3: Never cache image if property 'reloadImage' === never
      */
-    const { source, reloadImage, getImageSize } = this.props;
+    const { source, reloadImage } = this.props;
 
     // TODO: check source type as 'ImageURISource'
     // Download only if property 'uri' exists
     if (source.uri) {
       // Get image offline path if already exist else it returns undefined
       const offlinePath = offlineImageStore.getImageOfflinePath(source.uri);
-      if (offlinePath && getImageSize) {
-        (async () => {
-          const { width, height } = Image.resolveAssetSource(offlinePath);
-          getImageSize({ width, height });
-        })();
-      }
       this.setState({ path: offlinePath });
       // Subscribe so that we can re-render once image downloaded!
       offlineImageStore.subscribe(source, this.handler, reloadImage);
