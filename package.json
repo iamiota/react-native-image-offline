@@ -14,7 +14,8 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "rn-fetch-blob": "joltup/rn-fetch-blob"
+    "rn-fetch-blob": "joltup/rn-fetch-blob",
+	"@react-native-community/async-storage": "^1.8.1"
   },
   "dependencies": {
     "crypto-js": "^3.1.9-1"
