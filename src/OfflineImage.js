@@ -10,7 +10,7 @@ const FILE_PREFIX = Platform.OS === 'ios' ? '' : 'file://';
  * Wrapper class for React Image {@link https://facebook.github.io/react-native/docs/image.html}.
  * This component can get the cached image's device file path as source path.
  */
-class OfflineImage extends React.Component {
+class OfflineImage extends React.PureComponent {
 
   constructor(props) {
     super(props);
